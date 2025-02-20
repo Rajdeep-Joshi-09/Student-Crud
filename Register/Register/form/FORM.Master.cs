@@ -50,6 +50,9 @@ namespace Register.form
                 case 10:
                     Response.Redirect("LIST_student_subject.aspx");
                     break;
+                case 11:
+                    Response.Redirect("LIST_student_route.aspx");
+                    break;
             }
 
         

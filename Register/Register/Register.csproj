@@ -70,14 +70,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="form\FORM_std_wise_student.aspx" />
+    <Content Include="bin\Register.dll" />
+    <Content Include="bin\Register.pdb" />
+    <Content Include="form\FORM.Master" />
     <Content Include="form\FORM_bus_master.aspx" />
     <Content Include="form\FORM_bus_wise_driver.aspx" />
     <Content Include="form\FORM_driver_master.aspx" />
     <Content Include="form\FORM_route_master.aspx" />
     <Content Include="form\FORM_standerd_master.aspx" />
+    <Content Include="form\FORM_std_wise_student.aspx" />
     <Content Include="form\FORM_stop_master.aspx" />
     <Content Include="form\FORM_student_master.aspx" />
+    <Content Include="form\FORM_student_route.aspx" />
     <Content Include="form\FORM_student_subject.aspx" />
     <Content Include="form\FORM_subject_master.aspx" />
     <Content Include="form\LIST_bus_master.aspx" />
@@ -88,6 +92,7 @@
     <Content Include="form\LIST_std_wise_student.aspx" />
     <Content Include="form\LIST_stops_master.aspx" />
     <Content Include="form\LIST_student_master.aspx" />
+    <Content Include="form\LIST_student_route.aspx" />
     <Content Include="form\LIST_student_subject.aspx" />
     <Content Include="form\LIST_subject_master.aspx" />
     <Content Include="Web.config" />
@@ -102,14 +107,8 @@
     <Compile Include="BAL\BAL_stop_master.cs" />
     <Compile Include="BAL\BAL_student_master.cs" />
     <Compile Include="BAL\BAL_student_subject.cs" />
+    <Compile Include="BAL\BAL_student_to_route.cs" />
     <Compile Include="BAL\BAL_subject_master.cs" />
-    <Compile Include="form\FORM_std_wise_student.aspx.cs">
-      <DependentUpon>FORM_std_wise_student.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="form\FORM_std_wise_student.aspx.designer.cs">
-      <DependentUpon>FORM_std_wise_student.aspx</DependentUpon>
-    </Compile>
     <Compile Include="DAL\command.cs" />
     <Compile Include="DAL\connection.cs" />
     <Compile Include="DAL\paramater.cs" />
@@ -155,6 +154,13 @@
     <Compile Include="form\FORM_standerd_master.aspx.designer.cs">
       <DependentUpon>FORM_standerd_master.aspx</DependentUpon>
     </Compile>
+    <Compile Include="form\FORM_std_wise_student.aspx.cs">
+      <DependentUpon>FORM_std_wise_student.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="form\FORM_std_wise_student.aspx.designer.cs">
+      <DependentUpon>FORM_std_wise_student.aspx</DependentUpon>
+    </Compile>
     <Compile Include="form\FORM_stop_master.aspx.cs">
       <DependentUpon>FORM_stop_master.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -168,6 +174,13 @@
     </Compile>
     <Compile Include="form\FORM_student_master.aspx.designer.cs">
       <DependentUpon>FORM_student_master.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="form\FORM_student_route.aspx.cs">
+      <DependentUpon>FORM_student_route.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="form\FORM_student_route.aspx.designer.cs">
+      <DependentUpon>FORM_student_route.aspx</DependentUpon>
     </Compile>
     <Compile Include="form\FORM_student_subject.aspx.cs">
       <DependentUpon>FORM_student_subject.aspx</DependentUpon>
@@ -239,6 +252,13 @@
     <Compile Include="form\LIST_student_master.aspx.designer.cs">
       <DependentUpon>LIST_student_master.aspx</DependentUpon>
     </Compile>
+    <Compile Include="form\LIST_student_route.aspx.cs">
+      <DependentUpon>LIST_student_route.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="form\LIST_student_route.aspx.designer.cs">
+      <DependentUpon>LIST_student_route.aspx</DependentUpon>
+    </Compile>
     <Compile Include="form\LIST_student_subject.aspx.cs">
       <DependentUpon>LIST_student_subject.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -253,10 +273,10 @@
     <Compile Include="form\LIST_subject_master.aspx.designer.cs">
       <DependentUpon>LIST_subject_master.aspx</DependentUpon>
     </Compile>
+    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="form\FORM.Master" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

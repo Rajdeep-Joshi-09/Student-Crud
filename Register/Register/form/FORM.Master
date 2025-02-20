@@ -28,6 +28,7 @@
                     <li><a href="FORM_std_wise_student.aspx" class="text-gray-700 hover:text-blue-600">Standerds-Students</a></li>
                     <li><a href="FORM_subject_master.aspx" class="text-gray-700 hover:text-blue-600">Subject</a></li>
                     <li><a href="FORM_student_subject.aspx" class="text-gray-700 hover:text-blue-600">Student_subject</a></li>
+                    <li><a href="FORM_student_route.aspx" class="text-gray-700 hover:text-blue-600">Student_Route</a></li>
                     <li>
                         <asp:DropDownList runat="server" ID="ListItems" AutoPostBack="true"
                             OnSelectedIndexChanged="ListItems_SelectedIndexChanged" CssClass="text-black">
@@ -42,6 +43,7 @@
                             <asp:ListItem Value="8">Standerds-Students</asp:ListItem>
                             <asp:ListItem Value="9">Subject</asp:ListItem>
                             <asp:ListItem Value="10">Student-Subject</asp:ListItem>
+                            <asp:ListItem Value="11">Student-Route</asp:ListItem>
                         </asp:DropDownList>
                     </li>
                 </ul>
