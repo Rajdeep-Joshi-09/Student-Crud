@@ -52,6 +52,21 @@ namespace Register.DAL
 
         }
 
+        public static object ExecuteScalar(SqlCommand cmd)
+        {
+            try
+            {
+                SqlConnection cn = connection.Open_Connection();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Connection = cn;
+                return cmd.ExecuteScalar(); 
+            }
+            finally
+            {
+                connection.Close_Connection();
+            }
+        }
+
         internal static int ExecuteNonQuery(SqlCommand cmd)
         {
             throw new NotImplementedException();

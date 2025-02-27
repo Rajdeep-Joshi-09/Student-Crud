@@ -41,7 +41,7 @@ namespace Register.BAL
         {
             SqlCommand cmd = new SqlCommand();
             parameter para = new parameter();
-            cmd.CommandText = "rajdeep_select_student_master";
+            cmd.CommandText = "rajdeep_get_student_full_name";
             return command.ExecuteQuery(cmd);
         }
 

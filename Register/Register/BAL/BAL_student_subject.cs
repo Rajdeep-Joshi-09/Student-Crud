@@ -32,9 +32,33 @@ namespace Register.BAL
         {
             SqlCommand cmd = new SqlCommand();
             parameter para = new parameter();
-            cmd.CommandText = "rajdeep_select_student_master";
+            cmd.CommandText = "rajdeep_get_student_full_name";
             return command.ExecuteQuery(cmd);
         }
+
+
+
+        public static int get_standard_id(int studID)
+        {
+            SqlCommand cmd = new SqlCommand();
+            parameter para = new parameter();
+            cmd.CommandText = "rajdeep_get_current_std_of_student"; 
+            cmd.Parameters.Add(para.IntInputPara("@studentId", studID));
+
+            object result = command.ExecuteScalar(cmd); 
+
+            return result != null ? Convert.ToInt32(result) : -1; 
+        }
+
+        public static DataTable get_subject_details_from_stdId(int stdId)
+        {
+            SqlCommand cmd = new SqlCommand();
+            parameter para = new parameter();
+            cmd.CommandText = "rajdeep_get_subject_by_std_id";
+            cmd.Parameters.Add(para.IntInputPara("@stdId", stdId));
+            return command.ExecuteQuery(cmd);
+        }
+
 
         public static DataTable get_all_student_subject()
         {
@@ -75,3 +99,5 @@ namespace Register.BAL
         }
     }
 }
+
+

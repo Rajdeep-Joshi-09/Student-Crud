@@ -95,6 +95,7 @@
     <Content Include="form\LIST_student_route.aspx" />
     <Content Include="form\LIST_student_subject.aspx" />
     <Content Include="form\LIST_subject_master.aspx" />
+    <Content Include="IMAGE\1.jpg" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

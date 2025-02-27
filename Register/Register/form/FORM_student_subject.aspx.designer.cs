@@ -15,24 +15,6 @@ namespace Register.form
     {
 
         /// <summary>
-        /// subList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList subList;
-
-        /// <summary>
-        /// l2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label l2;
-
-        /// <summary>
         /// studList control.
         /// </summary>
         /// <remarks>
@@ -49,6 +31,24 @@ namespace Register.form
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label l1;
+
+        /// <summary>
+        /// viewSub control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button viewSub;
+
+        /// <summary>
+        /// chkSubjects control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBoxList chkSubjects;
 
         /// <summary>
         /// submitBtn control.

@@ -24,9 +24,9 @@
             <Columns>
                 <asp:BoundField DataField="student_route_id" HeaderText="id" Visible="false" />
                 <asp:BoundField DataField="RouteDetails" HeaderText="Bus - Route - Driver Name" />
-                <asp:BoundField DataField="stopName" HeaderText="Stop name" />
+                <asp:BoundField DataField="stopName" HeaderText="Stop name" />  
           
-                <asp:TemplateField HeaderText="Action">
+                <asp:TemplateField HeaderText="Action"> 
                     <ItemTemplate>
                         <asp:Button ID="btn_edit" runat="server" Text="Edit" CommandName="edit_btn" OnCommand="btn_edit_Command" CommandArgument='<%#Eval("student_route_id") %>' CssClass="px-4 py-2 rounded-lg bg-green-400 font-bold hover:bg-green-600 cursor-pointer mr-5" />
                         <asp:Button ID="del_btn" CommandName="del_btn" runat="server" Text="Delete" OnCommand="del_btn_Command" CommandArgument='<%#Eval("student_route_id") %>' CssClass="px-4 py-2 rounded-lg bg-red-400 font-bold hover:bg-red-600 cursor-pointer" />
