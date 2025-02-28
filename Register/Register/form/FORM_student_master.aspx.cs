@@ -119,7 +119,7 @@ namespace Register.form
             try
             {
                 MailMessage mail = new MailMessage();
-                mail.From = new MailAddress("joshirajdeep52@gmail.com"); // Replace with your email
+                mail.From = new MailAddress(""); // Replace with your email
                 mail.To.Add(email);  // Sends email to the student who registered
                 mail.Subject = "Welcome to Our Platform!";
                 mail.Body = $"Hello {studentName},\n\nYour registration was successful! We're excited to have you on board.\n\nRegards,\nRajdeep Joshi";
@@ -139,7 +139,7 @@ namespace Register.form
                     return;
                 }
                 SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);  // Use your SMTP provider
-                smtp.Credentials = new NetworkCredential("joshirajdeep52@gmail.com", "aitnvcatsuzyagkx"); // Use App Password if using Gmail
+                smtp.Credentials = new NetworkCredential("", ""); // Use App Password if using Gmail
                 smtp.EnableSsl = true;
                 smtp.Send(mail);
             }
