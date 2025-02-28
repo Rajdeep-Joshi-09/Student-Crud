@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Register.BAL;
 
 namespace Register.form
 {
@@ -12,36 +10,35 @@ namespace Register.form
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(!IsPostBack)
+            if (!IsPostBack)
             {
-                gridView();
+                LoadGridView();
             }
         }
 
-        public void gridView()
+        private void LoadGridView()
         {
-            DataTable dt = BAL.BAL_student_subject.get_all_student_subject();
+            DataTable dt = BAL_student_subject.get_all_student_subject();
             grid_ss.DataSource = dt;
             grid_ss.DataBind();
         }
 
         protected void btn_edit_Command(object sender, CommandEventArgs e)
         {
-            int id = Convert.ToInt32(e.CommandArgument.ToString());
-            string url = "FORM_student_subject.aspx?id=" + id;
-            string script = "window.open('" + url +"','_blank')";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "OpenWindow", script, true);
+            int id = Convert.ToInt32(e.CommandArgument);
+            Response.Redirect("FORM_student_subject.aspx?id=" + id);
         }
 
         protected void del_edit_Command(object sender, CommandEventArgs e)
         {
-            int id = Convert.ToInt32(e.CommandArgument.ToString());
-            int ret_id = BAL.BAL_student_subject.delete_student_subject(id);
-            if(ret_id > 0)
+            int id = Convert.ToInt32(e.CommandArgument);
+            int result = BAL_student_subject.delete_student_subject(id);
+
+            if (result > 0)
             {
-                lbl1.Text = "Record Deleted Successfull..";
-                lbl1.Style.Add("color", "red");
-                gridView();
+                lbl1.Text = "Record Deleted Successfully!";
+                lbl1.ForeColor = System.Drawing.Color.Red;
+                LoadGridView();
             }
         }
 

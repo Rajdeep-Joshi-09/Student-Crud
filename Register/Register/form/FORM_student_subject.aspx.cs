@@ -112,11 +112,21 @@ namespace Register.form
 
             chkSubjects.Items.Clear();
 
+            if(subjects.Rows.Count == 0) {
+                lbl1.Text = "No subjects found for this student";
+                lbl1.Style.Add("color", "red");
+                return;
+            }
+            lbl1.Text = "";
+
             foreach (DataRow row in subjects.Rows)
             {
                 ListItem listItem = new ListItem(row["subject_name"].ToString(), row["subject_id"].ToString());
                 chkSubjects.Items.Add(listItem);
             }
         }
+
+        
+
     }
 }

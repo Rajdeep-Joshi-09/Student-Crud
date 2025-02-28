@@ -24,15 +24,6 @@ namespace Register.form
         protected global::System.Web.UI.WebControls.TextBox txtFirstname;
 
         /// <summary>
-        /// rv1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rv1;
-
-        /// <summary>
         /// txtMiddleName control.
         /// </summary>
         /// <remarks>
@@ -58,15 +49,6 @@ namespace Register.form
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtLastName;
-
-        /// <summary>
-        /// RequiredFieldValidator2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator2;
 
         /// <summary>
         /// txtEmail control.

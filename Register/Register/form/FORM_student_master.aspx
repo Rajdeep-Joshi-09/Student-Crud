@@ -9,13 +9,13 @@
         </div>
 
         <asp:TextBox runat="server" ID="txtFirstname" placeholder="Enter First name" CssClass="border border-gray-300 rounded-lg p-3 w-3/4 focus:ring-2 focus:ring-blue-400"></asp:TextBox>
-        <asp:RequiredFieldValidator ID="rv1" runat="server" ControlToValidate="txtFirstname" ErrorMessage="First name is required" ForeColor="Red"></asp:RequiredFieldValidator>
+       
 
         <asp:TextBox runat="server" ID="txtMiddleName" placeholder="Enter Middle name" CssClass="border border-gray-300 rounded-lg p-3 w-3/4 focus:ring-2 focus:ring-blue-400"></asp:TextBox>
         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtMiddleName" ErrorMessage="Middle Name is required" ForeColor="Red"></asp:RequiredFieldValidator>
 
         <asp:TextBox runat="server" ID="txtLastName" placeholder="Enter Last name" CssClass="border border-gray-300 rounded-lg p-3 w-3/4 focus:ring-2 focus:ring-blue-400"></asp:TextBox>
-        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtLastName" ErrorMessage="Last name is required" ForeColor="Red"></asp:RequiredFieldValidator>
+
 
 
         <asp:TextBox runat="server" ID="txtEmail" placeholder="Enter your email"

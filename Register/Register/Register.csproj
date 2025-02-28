@@ -78,6 +78,7 @@
     <Content Include="form\FORM_driver_master.aspx" />
     <Content Include="form\FORM_route_master.aspx" />
     <Content Include="form\FORM_standerd_master.aspx" />
+    <Content Include="form\FORM_std_student_subject.aspx" />
     <Content Include="form\FORM_std_wise_student.aspx" />
     <Content Include="form\FORM_stop_master.aspx" />
     <Content Include="form\FORM_student_master.aspx" />
@@ -104,6 +105,7 @@
     <Compile Include="BAL\BAL_driver_master.cs" />
     <Compile Include="BAL\BAL_route_master.cs" />
     <Compile Include="BAL\BAL_standerd_master.cs" />
+    <Compile Include="BAL\BAL_std_student_subject.cs" />
     <Compile Include="BAL\BAL_std_wise_student.cs" />
     <Compile Include="BAL\BAL_stop_master.cs" />
     <Compile Include="BAL\BAL_student_master.cs" />
@@ -154,6 +156,13 @@
     </Compile>
     <Compile Include="form\FORM_standerd_master.aspx.designer.cs">
       <DependentUpon>FORM_standerd_master.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="form\FORM_std_student_subject.aspx.cs">
+      <DependentUpon>FORM_std_student_subject.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="form\FORM_std_student_subject.aspx.designer.cs">
+      <DependentUpon>FORM_std_student_subject.aspx</DependentUpon>
     </Compile>
     <Compile Include="form\FORM_std_wise_student.aspx.cs">
       <DependentUpon>FORM_std_wise_student.aspx</DependentUpon>
