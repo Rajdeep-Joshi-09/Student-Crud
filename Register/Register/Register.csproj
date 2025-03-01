@@ -72,6 +72,7 @@
   <ItemGroup>
     <Content Include="bin\Register.dll" />
     <Content Include="bin\Register.pdb" />
+    <Content Include="cred.txt" />
     <Content Include="form\FORM.Master" />
     <Content Include="form\FORM_bus_master.aspx" />
     <Content Include="form\FORM_bus_wise_driver.aspx" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -7,6 +8,18 @@ namespace Register.form
 {
     public partial class FORM_std_student_subject : System.Web.UI.Page
     {
+        // Store the list of student IDs whose subjects are expanded.
+        public List<int> ExpandedStudents
+        {
+            get
+            {
+                if (ViewState["ExpandedStudents"] == null)
+                    ViewState["ExpandedStudents"] = new List<int>();
+                return (List<int>)ViewState["ExpandedStudents"];
+            }
+            set { ViewState["ExpandedStudents"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -15,7 +28,7 @@ namespace Register.form
             }
         }
 
-        // Load Standard List into Dropdown
+        // Load Standard List into Dropdown.
         public void bindStandards()
         {
             DataTable dt = BAL.BAL_std_student_subject.get_standerd_details();
@@ -26,12 +39,11 @@ namespace Register.form
             stdList.Items.Insert(0, new ListItem("-- Select Standard --", "0"));
         }
 
-        // Handle Standard Selection Change
+        // Handle Standard Selection Change.
         protected void stdList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Close all opened subjects when standard changes
-            ClearSubjects();
-
+            // Reset expanded state when standard changes.
+            ExpandedStudents = new List<int>();
             int stdId = Convert.ToInt32(stdList.SelectedValue);
             if (stdId > 0)
             {
@@ -39,82 +51,71 @@ namespace Register.form
             }
             else
             {
-                grid_students.DataSource = null;
-                grid_students.DataBind();
+                rptStudents.DataSource = null;
+                rptStudents.DataBind();
                 lblMessage.Text = "Please select a valid standard.";
             }
         }
 
-        // Load Students into Grid Based on Selected Standard
+        // Load Students into Repeater Based on Selected Standard.
         private void LoadStudents(int stdId)
         {
             DataTable dt = BAL.BAL_std_student_subject.get_students_by_standard(stdId);
             if (dt.Rows.Count > 0)
             {
-                grid_students.DataSource = dt;
-                grid_students.DataBind();
+                rptStudents.DataSource = dt;
+                rptStudents.DataBind();
+                lblMessage.Text = "";
             }
             else
             {
-                grid_students.DataSource = null;
-                grid_students.DataBind();
+                rptStudents.DataSource = null;
+                rptStudents.DataBind();
                 lblMessage.Text = "No students found for this standard.";
-                return;
             }
-            lblMessage.Text = "";
         }
-        
-        // Handle GridView Commands (Expand/Collapse Subjects)
-        protected void grid_students_RowCommand(object sender, GridViewCommandEventArgs e)
+
+        // Toggle the subject detail row when expand/collapse is clicked.
+        protected void rptStudents_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             if (e.CommandName == "ExpandSubjects")
             {
-                int rowIndex = Convert.ToInt32(e.CommandArgument);
-                GridViewRow row = grid_students.Rows[rowIndex];
-                int studentId = Convert.ToInt32(grid_students.DataKeys[rowIndex].Value);
+                int studentId = Convert.ToInt32(e.CommandArgument);
+                // Toggle: if already expanded, remove it; otherwise, add it.
+                if (ExpandedStudents.Contains(studentId))
+                    ExpandedStudents.Remove(studentId);
+                else
+                    ExpandedStudents.Add(studentId);
+
                 int stdId = Convert.ToInt32(stdList.SelectedValue);
+                LoadStudents(stdId);
+            }
+        }
 
-                Button btnExpand = (Button)row.FindControl("btnExpand");
-                GridView nestedGrid = (GridView)row.FindControl("grid_subjects");
-
-                if (btnExpand != null && nestedGrid != null)
+        // Bind subjects to the inner repeater if the student is expanded.
+        protected void rptStudents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListItemType.Item ||
+                e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+                DataRowView row = (DataRowView)e.Item.DataItem;
+                int studentId = Convert.ToInt32(row["id"]);
+                if (ExpandedStudents.Contains(studentId))
                 {
-                    if (nestedGrid.Visible)
-                    {
-                        // Hide subjects and change `x` back to `+`
-                        nestedGrid.Visible = false;
-                        btnExpand.Text = "+";
-                    }
-                    else
-                    {
-                        // Load subjects and change `+` to `x`
-                        DataTable dtSubjects = BAL.BAL_std_student_subject.get_subjects_by_student(studentId, stdId);
-                        nestedGrid.DataSource = dtSubjects;
-                        nestedGrid.DataBind();
-                        nestedGrid.Visible = true;
-                        btnExpand.Text = "x";
-                    }
+                    Repeater rptSubjects = (Repeater)e.Item.FindControl("rptSubjects");
+                    int stdId = Convert.ToInt32(stdList.SelectedValue);
+                    DataTable dtSubjects = BAL.BAL_std_student_subject.get_subjects_by_student(studentId, stdId);
+                    rptSubjects.DataSource = dtSubjects;
+                    rptSubjects.DataBind();
                 }
             }
         }
 
-        // Hide all opened subjects when standard changes
-        private void ClearSubjects()
+        // Helper method for inline binding: returns "table-row" if the student is expanded, otherwise "none".
+        public string GetDisplayStyle(object studentIdObj)
         {
-            foreach (GridViewRow row in grid_students.Rows)
-            {
-                GridView nestedGrid = (GridView)row.FindControl("grid_subjects");
-                Button btnExpand = (Button)row.FindControl("btnExpand");
-
-                if (nestedGrid != null)
-                {
-                    nestedGrid.Visible = false;
-                }
-                if (btnExpand != null)
-                {
-                    btnExpand.Text = "+";
-                }
-            }
+            int studentId = Convert.ToInt32(studentIdObj);
+            return ExpandedStudents.Contains(studentId) ? "table-row" : "none";
         }
     }
 }
