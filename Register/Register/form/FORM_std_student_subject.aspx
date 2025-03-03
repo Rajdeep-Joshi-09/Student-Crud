@@ -2,86 +2,26 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
   <style>
-    /* Outer container with dark border */
-    .outer-container {
-      border: 2px solid #333;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: #fafafa;
-      max-width: 1200px;
-      margin: auto;
-    }
-    /* Table styling */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      
-      padding: 10px 8px;
-      text-align: left;
-      vertical-align: middle;
-    }
-    th {
-      background-color: #e0e0e0;
-      font-weight: bold;
-    }
-    /* Detail row for subjects: add a dark top border */
-    .subject-row td {
-      border-top: 2px solid #333;
-      border-bottom: 2px solid #333;
-    }
-    /* Subject container using CSS Grid for neat alignment */
-    .subject-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      align-items: center;
-      padding: 10px 0;
-    }
-    /* Subject item styling */
-    .subject-item {
-      display: flex;
-      align-items: center;
-    }
-    .subject-item span {
-      margin-right: 5px;
-    }
-    /* Textbox styling */
-    input[type="text"] {
-      border: 1px solid #aaa;
-      padding: 5px 8px;
-      border-radius: 4px;
-      width: 100px;
-    }
-    /* Expand button styling */
-    .expand-btn {
-      background: linear-gradient(to bottom, #4a90e2, #357ab8);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      padding: 5px 12px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s ease;
-    }
-    .expand-btn:hover {
-      background: linear-gradient(to bottom, #357ab8, #4a90e2);
-    }
-    /* Dropdown styling */
-    .std-dropdown {
-      padding: 8px;
-      width: 220px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
+    .outer-container { border: 2px solid #333; padding: 20px; border-radius: 8px; background-color: #fafafa; max-width: 1200px; margin: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px 8px; text-align: left; vertical-align: middle; }
+    th { background-color: #e0e0e0; font-weight: bold; }
+    .subject-row td { border-top: 2px solid #333; border-bottom: 2px solid #333; }
+    .subject-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; align-items: center; padding: 10px 0; }
+    .subject-item { display: flex; align-items: center; }
+    .subject-item span { margin-right: 10px; font-weight: bold; }
+    .mark-textbox { border: 1px solid #aaa; padding: 5px 8px; border-radius: 4px; width: 100px; margin-right: 10px; }
+    .expand-btn { background: linear-gradient(to bottom, #4a90e2, #357ab8); color: #fff; border: none; border-radius: 4px; padding: 5px 12px; cursor: pointer; font-weight: bold; transition: background 0.3s ease; }
+    .expand-btn:hover { background: linear-gradient(to bottom, #357ab8, #4a90e2); }
+    .std-dropdown { padding: 8px; width: 220px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 20px; }
+    .global-submit-button { background: linear-gradient(to bottom, #ff9800, #e68a00); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: bold; transition: background 0.3s ease; margin-top: 20px; }
+    .global-submit-button:hover { background: linear-gradient(to bottom, #e68a00, #ff9800); }
   </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+  <asp:ScriptManager ID="ScriptManager1" runat="server" />
+  
   <div class="outer-container">
     <!-- Standard Dropdown -->
     <div style="margin-bottom:20px;">
@@ -110,7 +50,12 @@
           <ItemTemplate>
             <!-- Student Data Row -->
             <tr>
-              <td><%# Eval("student_name") %></td>
+              <td>
+                <!-- Hidden field for student id -->
+                <asp:HiddenField ID="hfStudentId" runat="server" Value='<%# Eval("id") %>' />
+                <!-- Student name label -->
+                <asp:Label ID="lblStudentName" runat="server" Text='<%# Eval("student_name") %>'></asp:Label>
+              </td>
               <td><%# Eval("student_email") %></td>
               <td><%# Eval("student_mobile") %></td>
               <td>
@@ -130,8 +75,12 @@
                         <span>
                           <%# Container.ItemIndex + 1 %>. <%# Eval("subject_name") %>
                         </span>
-                        <input type="text" 
-                          name="txtMarks_<%# Eval("subject_id") %>_<%# Container.ItemIndex %>" />
+                        <!-- Hidden field for subject name (if needed for display) -->
+                        <asp:HiddenField ID="hfSubjectName" runat="server" Value='<%# Eval("subject_name") %>' />
+                        <!-- New hidden field for subject id -->
+                        <asp:HiddenField ID="hfSubjectId" runat="server" Value='<%# Eval("subject_id") %>' />
+                        <!-- TextBox for entering marks -->
+                        <asp:TextBox ID="txtMarks" runat="server" CssClass="mark-textbox" EnableViewState="true" />
                       </div>
                     </ItemTemplate>
                   </asp:Repeater>
@@ -142,5 +91,11 @@
         </asp:Repeater>
       </tbody>
     </table>
+    
+    <!-- Global Submit Button -->
+    <div style="text-align:right;">
+      <asp:Button ID="btnSubmitAll" runat="server" Text="Submit All Marks" 
+        OnClick="btnSubmitAll_Click" CssClass="global-submit-button" />
+    </div>
   </div>
 </asp:Content>

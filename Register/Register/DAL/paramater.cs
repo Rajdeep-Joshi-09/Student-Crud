@@ -53,6 +53,26 @@ namespace Register.DAL
             return Parameter;
         }
 
+        public SqlParameter DecimalInputPara(string pname, decimal pvalue)
+        {
+            SqlParameter para = new SqlParameter();
+            para.DbType = DbType.Decimal;
+            para.Direction = ParameterDirection.Input;
+            para.ParameterName = pname;
+            para.Value = pvalue;
+            return para;
+        }
+
+        public SqlParameter DecimalOutputPara(string pname)
+        {
+            SqlParameter Parameter = new SqlParameter();
+
+            Parameter.DbType = DbType.Decimal;
+            Parameter.Size = 300;
+            Parameter.Direction = ParameterDirection.Output;
+            Parameter.ParameterName = pname;
+            return Parameter;
+        }
         public SqlParameter TimeSpanInputPara(string pname, TimeSpan pvalue)
         {
             SqlParameter Parameter = new SqlParameter();

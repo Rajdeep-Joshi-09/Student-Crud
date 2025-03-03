@@ -67,9 +67,6 @@ namespace Register.DAL
             }
         }
 
-        internal static int ExecuteNonQuery(SqlCommand cmd)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

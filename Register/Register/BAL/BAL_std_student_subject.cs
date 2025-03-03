@@ -37,6 +37,18 @@ namespace Register.BAL
             return command.ExecuteQuery(cmd);
         }
 
+        public static int InsertStudentMark(int studentId, int subjectId, decimal marks)
+        {
+            SqlCommand cmd = new SqlCommand();
+            parameter para = new parameter();
+            cmd.CommandText = "rajdeep_insertMarks";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add(para.IntInputPara("@StudentId", studentId));
+            cmd.Parameters.Add(para.IntInputPara("@SubjectId", subjectId));
+            cmd.Parameters.Add(para.DecimalInputPara("@Marks", marks));
+            return command.ExecuteNonQuery1(cmd);
+        }
+
 
     }
 }

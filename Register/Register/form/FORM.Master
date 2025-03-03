@@ -29,6 +29,7 @@
                     <li><a href="FORM_subject_master.aspx" class="text-gray-700 hover:text-blue-600">Subject</a></li>
                     <li><a href="FORM_student_subject.aspx" class="text-gray-700 hover:text-blue-600">Student_subject</a></li>
                     <li><a href="FORM_student_route.aspx" class="text-gray-700 hover:text-blue-600">Student_Route</a></li>
+                    <li><a href="FORM_std_student_subject.aspx" class="text-gray-700 hover:text-blue-600">Display SWS</a></li>
                     <li>
                         <asp:DropDownList runat="server" ID="ListItems" AutoPostBack="true"
                             OnSelectedIndexChanged="ListItems_SelectedIndexChanged" CssClass="text-black">
