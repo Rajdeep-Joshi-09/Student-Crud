@@ -342,7 +342,7 @@ namespace Register.form
                     return;
                 }
 
-                // Fetch subjects using the new BAL method.
+                // Fetch all subjects for the standard.
                 DataTable dtSubjects = BAL.BAL_std_student_subject.get_subjects_by_standard(stdId);
                 if (dtSubjects == null || dtSubjects.Rows.Count == 0)
                 {
@@ -358,62 +358,88 @@ namespace Register.form
                     studentIds.Add(Convert.ToInt32(dr["id"]));
                 }
 
-                // Get marks for all students.
+                // Get marks for all students via your stored procedure.
                 Dictionary<string, string> marksDict = GetMarksForStudents(studentIds, stdId);
 
-                // Create export DataTable: first column is "Student Name", then one column per subject.
-                DataTable dtExport = new DataTable();
-                dtExport.Columns.Add("Student Name");
-                foreach (DataRow drSub in dtSubjects.Rows)
+                // Build a dictionary mapping studentId to a HashSet of assigned subject IDs.
+                Dictionary<int, HashSet<int>> assignedSubjects = new Dictionary<int, HashSet<int>>();
+                foreach (DataRow dr in dtStudents.Rows)
                 {
-                    string subjectName = drSub["subject_name"].ToString();
-                    dtExport.Columns.Add(subjectName);
+                    int studentId = Convert.ToInt32(dr["id"]);
+                    DataTable dtAssigned = BAL.BAL_std_student_subject.get_subjects_by_student(studentId, stdId);
+                    HashSet<int> subjectSet = new HashSet<int>();
+                    foreach (DataRow drSub in dtAssigned.Rows)
+                    {
+                        subjectSet.Add(Convert.ToInt32(drSub["subject_id"]));
+                    }
+                    assignedSubjects[studentId] = subjectSet;
                 }
 
-                // Populate export table: for each student, fill in the mark for each subject.
-                foreach (DataRow drStudent in dtStudents.Rows)
+                // Prepare EPPlus.
+                OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage())
                 {
-                    DataRow newRow = dtExport.NewRow();
-                    int studentId = Convert.ToInt32(drStudent["id"]);
-                    newRow["Student Name"] = drStudent["student_name"].ToString();
+                    OfficeOpenXml.ExcelWorksheet ws = package.Workbook.Worksheets.Add("Student Marks");
+
+                    // Write header row.
+                    ws.Cells[1, 1].Value = "Student Name";
+                    ws.Cells[1, 1].Style.Font.Bold = true;
+                    int colIndex = 2;
+                    // Create a list for subject order.
+                    List<Tuple<int, string>> subjectList = new List<Tuple<int, string>>();
                     foreach (DataRow drSub in dtSubjects.Rows)
                     {
                         int subjectId = Convert.ToInt32(drSub["subject_id"]);
                         string subjectName = drSub["subject_name"].ToString();
-                        string key = studentId + "_" + subjectId;
-                        newRow[subjectName] = marksDict.ContainsKey(key) ? marksDict[key] : "";
-                    }
-                    dtExport.Rows.Add(newRow);
-                }
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set the license context
-                using (ExcelPackage package = new ExcelPackage())
-                {
-                    ExcelWorksheet ws = package.Workbook.Worksheets.Add("Student Marks");
-
-                    // Write header row.
-                    for (int col = 1; col <= dtExport.Columns.Count; col++)
-                    {
-                        ws.Cells[1, col].Value = dtExport.Columns[col - 1].ColumnName;
-                        ws.Cells[1, col].Style.Font.Bold = true;
+                        subjectList.Add(new Tuple<int, string>(subjectId, subjectName));
+                        ws.Cells[1, colIndex].Value = subjectName;
+                        ws.Cells[1, colIndex].Style.Font.Bold = true;
+                        colIndex++;
                     }
 
-                    // Write data rows.
-                    for (int row = 0; row < dtExport.Rows.Count; row++)
+                    // Write data rows for each student.
+                    int rowIndex = 2;
+                    foreach (DataRow drStudent in dtStudents.Rows)
                     {
-                        for (int col = 0; col < dtExport.Columns.Count; col++)
+                        int studentId = Convert.ToInt32(drStudent["id"]);
+                        string studentName = drStudent["student_name"].ToString();
+                        ws.Cells[rowIndex, 1].Value = studentName;
+
+                        colIndex = 2;
+                        foreach (var subject in subjectList)
                         {
-                            object cellValue = dtExport.Rows[row][col];
-                            ws.Cells[row + 2, col + 1].Value = cellValue;
-                            // For subject columns (not the first column), apply gray fill if empty.
-                            if (col > 0 && (cellValue == null || string.IsNullOrEmpty(cellValue.ToString())))
+                            int subjectId = subject.Item1;
+                            string key = studentId + "_" + subjectId;
+
+                            // Check if this subject is assigned for the student.
+                            if (assignedSubjects.ContainsKey(studentId) && assignedSubjects[studentId].Contains(subjectId))
                             {
-                                ws.Cells[row + 2, col + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                                ws.Cells[row + 2, col + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                                // Subject is assigned.
+                                if (marksDict.ContainsKey(key))
+                                {
+                                    ws.Cells[rowIndex, colIndex].Value = marksDict[key];
+                                }
+                                else
+                                {
+                                    ws.Cells[rowIndex, colIndex].Value = ""; // Assigned, but mark not entered yet.
+                                }
+                                // White background for assigned subjects.
+                                ws.Cells[rowIndex, colIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                ws.Cells[rowIndex, colIndex].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                             }
+                            else
+                            {
+                                // Subject is not assigned for this student—set cell empty and gray.
+                                ws.Cells[rowIndex, colIndex].Value = "";
+                                ws.Cells[rowIndex, colIndex].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                ws.Cells[rowIndex, colIndex].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                            }
+                            colIndex++;
                         }
+                        rowIndex++;
                     }
 
-                    // Apply borders to all cells in the used range.
+                    // Apply borders to all cells.
                     using (var range = ws.Cells[ws.Dimension.Address])
                     {
                         range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
@@ -439,6 +465,7 @@ namespace Register.form
                     "alert('Error exporting Excel: " + ex.Message.Replace("'", "\\'") + "');", true);
             }
         }
+
 
         protected void btnImportExcel_Click(object sender, EventArgs e)
         {
