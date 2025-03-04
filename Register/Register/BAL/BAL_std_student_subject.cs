@@ -37,6 +37,24 @@ namespace Register.BAL
             return command.ExecuteQuery(cmd);
         }
 
+        // New method: Fetch subjects for a given standard.
+        public static DataTable get_subjects_by_standard(int stdId)
+        {
+            SqlCommand cmd = new SqlCommand();
+            parameter para = new parameter();
+            cmd.CommandText = "rajdeep_get_subject_by_std_id";
+            cmd.Parameters.Add(para.IntInputPara("@stdId", stdId));
+            return command.ExecuteQuery(cmd);
+        }
+
+        public static DataTable get_all_students_marks()
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "rajdeep_get_all_students_marks";  // Stored procedure to get all marks.
+            cmd.CommandType = CommandType.StoredProcedure;
+            return command.ExecuteQuery(cmd);
+        }
+
         public static int InsertStudentMark(int studentId, int subjectId, decimal marks)
         {
             SqlCommand cmd = new SqlCommand();
@@ -49,6 +67,16 @@ namespace Register.BAL
             return command.ExecuteNonQuery1(cmd);
         }
 
-
+        // New method: Get marks for students using the stored procedure 'rajdeep_get_marks_for_students'
+        public static DataTable get_marks_for_students(string studentIds, int stdId)
+        {
+            SqlCommand cmd = new SqlCommand();
+            parameter para = new parameter();
+            cmd.CommandText = "rajdeep_get_marks_for_students";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add(para.StringInputPara("@StudentIds", studentIds));
+            cmd.Parameters.Add(para.IntInputPara("@stdId", stdId));
+            return command.ExecuteQuery(cmd);
+        }
     }
 }

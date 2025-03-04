@@ -14,7 +14,7 @@
     .expand-btn { background: linear-gradient(to bottom, #4a90e2, #357ab8); color: #fff; border: none; border-radius: 4px; padding: 5px 12px; cursor: pointer; font-weight: bold; transition: background 0.3s ease; }
     .expand-btn:hover { background: linear-gradient(to bottom, #357ab8, #4a90e2); }
     .std-dropdown { padding: 8px; width: 220px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 20px; }
-    .global-submit-button { background: linear-gradient(to bottom, #ff9800, #e68a00); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: bold; transition: background 0.3s ease; margin-top: 20px; }
+    .global-submit-button { background: linear-gradient(to bottom, #ff9800, #e68a00); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: bold; transition: background 0.3s ease; margin-top: 20px; margin-right: 10px; }
     .global-submit-button:hover { background: linear-gradient(to bottom, #e68a00, #ff9800); }
   </style>
 </asp:Content>
@@ -75,9 +75,9 @@
                         <span>
                           <%# Container.ItemIndex + 1 %>. <%# Eval("subject_name") %>
                         </span>
-                        <!-- Hidden field for subject name (if needed for display) -->
+                        <!-- Hidden field for subject name -->
                         <asp:HiddenField ID="hfSubjectName" runat="server" Value='<%# Eval("subject_name") %>' />
-                        <!-- New hidden field for subject id -->
+                        <!-- Hidden field for subject id -->
                         <asp:HiddenField ID="hfSubjectId" runat="server" Value='<%# Eval("subject_id") %>' />
                         <!-- TextBox for entering marks -->
                         <asp:TextBox ID="txtMarks" runat="server" CssClass="mark-textbox" EnableViewState="true" />
@@ -92,10 +92,16 @@
       </tbody>
     </table>
     
-    <!-- Global Submit Button -->
+    <!-- Global Buttons: Submit & Export -->
     <div style="text-align:right;">
       <asp:Button ID="btnSubmitAll" runat="server" Text="Submit All Marks" 
         OnClick="btnSubmitAll_Click" CssClass="global-submit-button" />
+      <asp:Button ID="btnExportToExcel" runat="server" Text="Export to Excel" 
+        OnClick="btnExportToExcel_Click" CssClass="global-submit-button" />
+        <!-- FileUpload control for Excel file import -->
+<asp:FileUpload ID="fuExcelImport" runat="server" />
+<asp:Button ID="btnImportExcel" runat="server" Text="Import Excel Marks" OnClick="btnImportExcel_Click" CssClass="global-submit-button" />
+
     </div>
   </div>
 </asp:Content>

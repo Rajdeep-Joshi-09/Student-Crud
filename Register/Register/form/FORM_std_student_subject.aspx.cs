@@ -1,6 +1,10 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -21,7 +25,6 @@ namespace Register.form
         }
 
         // Dictionary to persist entered marks across postbacks.
-        // Key: studentId; Value: Dictionary where key = subjectId (as string), value = mark
         private Dictionary<int, Dictionary<string, string>> StudentMarks
         {
             get
@@ -106,7 +109,6 @@ namespace Register.form
 
                 foreach (RepeaterItem subjectItem in rptSubjects.Items)
                 {
-                    // Use hfSubjectId as the key
                     HiddenField hfSubjectId = (HiddenField)subjectItem.FindControl("hfSubjectId");
                     TextBox txtMarks = (TextBox)subjectItem.FindControl("txtMarks");
                     string subjectId = hfSubjectId != null ? hfSubjectId.Value : "";
@@ -186,8 +188,7 @@ namespace Register.form
             return ExpandedStudents.Contains(studentId) ? "table-row" : "none";
         }
 
-        // Global submit: validates that at least one student's marks are fully entered,
-        // and for each expanded student, ensures no subject is missing marks.
+        // Global submit: validates that at least one student's marks are fully entered.
         protected void btnSubmitAll_Click(object sender, EventArgs e)
         {
             // Save current marks before submission.
@@ -278,6 +279,279 @@ namespace Register.form
 
                 ScriptManager.RegisterStartupScript(this, GetType(), "alert",
                     "alert('Marks successfully inserted for all students.');", true);
+            }
+        }
+
+        // Helper method: Get marks for all students in the given standard.
+        // Returns a dictionary with key: "studentId_subjectId" and value: marks.
+        private Dictionary<string, string> GetMarksForStudents(List<int> studentIds, int stdId)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            if (studentIds.Count == 0)
+                return dict;
+
+            // Create a comma-separated list of student IDs.
+            string ids = string.Join(",", studentIds);
+
+            // Set up the stored procedure call.
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "rajdeep_get_marks_for_students";
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+            // Assuming you have a method in your parameter class to add VARCHAR parameters.
+            var para = new Register.DAL.parameter();
+            cmd.Parameters.Add(para.StringInputPara("@StudentIds", ids));
+            cmd.Parameters.Add(para.IntInputPara("@stdId", stdId));
+
+            // Execute the stored procedure.
+            DataTable dtMarks = Register.DAL.command.ExecuteQuery(cmd);
+
+            // Populate the dictionary from the DataTable.
+            foreach (DataRow dr in dtMarks.Rows)
+            {
+                int studentId = Convert.ToInt32(dr["student_id"]);
+                int subjectId = Convert.ToInt32(dr["subject_id"]);
+                string mark = dr["marks"].ToString();
+                string key = studentId + "_" + subjectId;
+                dict[key] = mark;
+            }
+
+            return dict;
+        }
+
+
+        // Excel Export using EPPlus – exports ALL students, their subjects as columns, and marks beneath.
+        protected void btnExportToExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (stdList.SelectedValue == "0")
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                        "alert('Please select a standard first.');", true);
+                    return;
+                }
+                int stdId = Convert.ToInt32(stdList.SelectedValue);
+
+                // Fetch all students using BAL.
+                DataTable dtStudents = BAL.BAL_std_student_subject.get_students_by_standard(stdId);
+                if (dtStudents == null || dtStudents.Rows.Count == 0)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                        "alert('No students found for this standard.');", true);
+                    return;
+                }
+
+                // Fetch subjects using the new BAL method.
+                DataTable dtSubjects = BAL.BAL_std_student_subject.get_subjects_by_standard(stdId);
+                if (dtSubjects == null || dtSubjects.Rows.Count == 0)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                        "alert('No subjects found for this standard.');", true);
+                    return;
+                }
+
+                // Build list of student IDs.
+                List<int> studentIds = new List<int>();
+                foreach (DataRow dr in dtStudents.Rows)
+                {
+                    studentIds.Add(Convert.ToInt32(dr["id"]));
+                }
+
+                // Get marks for all students.
+                Dictionary<string, string> marksDict = GetMarksForStudents(studentIds, stdId);
+
+                // Create export DataTable: first column is "Student Name", then one column per subject.
+                DataTable dtExport = new DataTable();
+                dtExport.Columns.Add("Student Name");
+                foreach (DataRow drSub in dtSubjects.Rows)
+                {
+                    string subjectName = drSub["subject_name"].ToString();
+                    dtExport.Columns.Add(subjectName);
+                }
+
+                // Populate export table: for each student, fill in the mark for each subject.
+                foreach (DataRow drStudent in dtStudents.Rows)
+                {
+                    DataRow newRow = dtExport.NewRow();
+                    int studentId = Convert.ToInt32(drStudent["id"]);
+                    newRow["Student Name"] = drStudent["student_name"].ToString();
+                    foreach (DataRow drSub in dtSubjects.Rows)
+                    {
+                        int subjectId = Convert.ToInt32(drSub["subject_id"]);
+                        string subjectName = drSub["subject_name"].ToString();
+                        string key = studentId + "_" + subjectId;
+                        newRow[subjectName] = marksDict.ContainsKey(key) ? marksDict[key] : "";
+                    }
+                    dtExport.Rows.Add(newRow);
+                }
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set the license context
+                using (ExcelPackage package = new ExcelPackage())
+                {
+                    ExcelWorksheet ws = package.Workbook.Worksheets.Add("Student Marks");
+
+                    // Write header row.
+                    for (int col = 1; col <= dtExport.Columns.Count; col++)
+                    {
+                        ws.Cells[1, col].Value = dtExport.Columns[col - 1].ColumnName;
+                        ws.Cells[1, col].Style.Font.Bold = true;
+                    }
+
+                    // Write data rows.
+                    for (int row = 0; row < dtExport.Rows.Count; row++)
+                    {
+                        for (int col = 0; col < dtExport.Columns.Count; col++)
+                        {
+                            object cellValue = dtExport.Rows[row][col];
+                            ws.Cells[row + 2, col + 1].Value = cellValue;
+                            // For subject columns (not the first column), apply gray fill if empty.
+                            if (col > 0 && (cellValue == null || string.IsNullOrEmpty(cellValue.ToString())))
+                            {
+                                ws.Cells[row + 2, col + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                ws.Cells[row + 2, col + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                            }
+                        }
+                    }
+
+                    // Apply borders to all cells in the used range.
+                    using (var range = ws.Cells[ws.Dimension.Address])
+                    {
+                        range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    }
+
+                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                    byte[] fileBytes = package.GetAsByteArray();
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("Content-Disposition", "attachment;filename=StudentMarks.xlsx");
+                    Response.BinaryWrite(fileBytes);
+                    Response.Flush();
+                    Response.End();
+                }
+            }
+            catch (Exception ex)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                    "alert('Error exporting Excel: " + ex.Message.Replace("'", "\\'") + "');", true);
+            }
+        }
+
+        protected void btnImportExcel_Click(object sender, EventArgs e)
+        {
+            if (!fuExcelImport.HasFile)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert", "alert('Please select an Excel file to import.');", true);
+                return;
+            }
+
+            try
+            {
+                // Load the uploaded Excel file into EPPlus.
+                using (ExcelPackage package = new ExcelPackage(fuExcelImport.PostedFile.InputStream))
+                {
+                    // Assume the first worksheet contains the data.
+                    ExcelWorksheet ws = package.Workbook.Worksheets[0];
+                    int totalRows = ws.Dimension.End.Row;
+                    int totalCols = ws.Dimension.End.Column;
+
+                    // Build a mapping of subject column index to subject name (header row).
+                    // Assumes the first column is "Student Name" so subject columns start from 2.
+                    Dictionary<int, string> subjectColumnMapping = new Dictionary<int, string>();
+                    for (int col = 2; col <= totalCols; col++)
+                    {
+                        string header = ws.Cells[1, col].Text.Trim();
+                        if (!string.IsNullOrEmpty(header))
+                        {
+                            subjectColumnMapping[col] = header;
+                        }
+                    }
+
+                    // Get the selected standard ID.
+                    int stdId = Convert.ToInt32(stdList.SelectedValue);
+
+                    // Get current students for this standard.
+                    DataTable dtStudents = BAL.BAL_std_student_subject.get_students_by_standard(stdId);
+                    // Map student name (trimmed) to student id.
+                    Dictionary<string, int> studentMapping = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    foreach (DataRow dr in dtStudents.Rows)
+                    {
+                        string studentName = dr["student_name"].ToString().Trim();
+                        int studentId = Convert.ToInt32(dr["id"]);
+                        if (!studentMapping.ContainsKey(studentName))
+                        {
+                            studentMapping.Add(studentName, studentId);
+                        }
+                    }
+
+                    // Get subjects for this standard.
+                    DataTable dtSubjects = BAL.BAL_std_student_subject.get_subjects_by_standard(stdId);
+                    // Map subject name (trimmed) to subject id.
+                    Dictionary<string, int> subjectIdMapping = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    foreach (DataRow dr in dtSubjects.Rows)
+                    {
+                        string subjectName = dr["subject_name"].ToString().Trim();
+                        int subjectId = Convert.ToInt32(dr["subject_id"]);
+                        if (!subjectIdMapping.ContainsKey(subjectName))
+                        {
+                            subjectIdMapping.Add(subjectName, subjectId);
+                        }
+                    }
+
+                    // Loop through each data row in the Excel (starting at row 2).
+                    for (int row = 2; row <= totalRows; row++)
+                    {
+                        // Read the student name from the first column.
+                        string studentName = ws.Cells[row, 1].Text.Trim();
+                        if (string.IsNullOrEmpty(studentName))
+                            continue;
+
+                        if (!studentMapping.TryGetValue(studentName, out int studentId))
+                        {
+                            // Student not found in this standard. Log or skip.
+                            continue;
+                        }
+
+                        // Process each subject column.
+                        foreach (KeyValuePair<int, string> kvp in subjectColumnMapping)
+                        {
+                            int colIndex = kvp.Key;
+                            string subjectName = kvp.Value;
+
+                            if (!subjectIdMapping.TryGetValue(subjectName, out int subjectId))
+                            {
+                                // Subject not found in this standard.
+                                continue;
+                            }
+
+                            // Read the mark value from the cell.
+                            string markText = ws.Cells[row, colIndex].Text.Trim();
+                            if (!string.IsNullOrEmpty(markText))
+                            {
+                                if (decimal.TryParse(markText, out decimal mark))
+                                {
+                                    // Insert (or update) the mark in the database.
+                                    // This method call can be modified if you need to update instead of insert.
+                                    BAL.BAL_std_student_subject.InsertStudentMark(studentId, subjectId, mark);
+                                }
+                                else
+                                {
+                                    // Optionally log an error for invalid mark format.
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert", "alert('Marks imported successfully!');", true);
+            }
+            catch (Exception ex)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                    "alert('Error importing Excel: " + ex.Message.Replace("'", "\\'") + "');", true);
             }
         }
     }
