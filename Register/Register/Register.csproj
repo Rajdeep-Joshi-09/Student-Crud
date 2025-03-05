@@ -158,6 +158,7 @@
     <Content Include="form\LIST_student_route.aspx" />
     <Content Include="form\LIST_student_subject.aspx" />
     <Content Include="form\LIST_subject_master.aspx" />
+    <Content Include="form\Tree_view.aspx" />
     <Content Include="IMAGE\1.jpg" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -344,6 +345,13 @@
     </Compile>
     <Compile Include="form\LIST_subject_master.aspx.designer.cs">
       <DependentUpon>LIST_subject_master.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="form\Tree_view.aspx.cs">
+      <DependentUpon>Tree_view.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="form\Tree_view.aspx.designer.cs">
+      <DependentUpon>Tree_view.aspx</DependentUpon>
     </Compile>
     <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

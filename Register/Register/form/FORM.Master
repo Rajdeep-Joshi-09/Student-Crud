@@ -16,8 +16,8 @@
 
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 flex justify-between items-center h-14">
-                <a href="FORM_student_master.aspx" class="text-xl font-bold text-blue-600">ListForms</a>
-                <ul class="flex space-x-6">
+                <a href="FORM_student_master.aspx" class="text-xl font-bold text-blue-600 mr-10">ListForms</a>
+                <ul class="flex space-x-6 flex-wrap gap-3">
                     <li><a href="FORM_student_master.aspx" class="text-gray-700 hover:text-blue-600">Students</a></li>
                     <li><a href="FORM_bus_master.aspx" class="text-gray-700 hover:text-blue-600">Bus</a></li>
                     <li><a href="FORM_route_master.aspx" class="text-gray-700 hover:text-blue-600">Route</a></li>
@@ -30,6 +30,7 @@
                     <li><a href="FORM_student_subject.aspx" class="text-gray-700 hover:text-blue-600">Student_subject</a></li>
                     <li><a href="FORM_student_route.aspx" class="text-gray-700 hover:text-blue-600">Student_Route</a></li>
                     <li><a href="FORM_std_student_subject.aspx" class="text-gray-700 hover:text-blue-600">Display SWS</a></li>
+                    <li><a href="Tree_view.aspx" class="text-gray-700 hover:text-blue-600">List Tree View</a></li>
                     <li>
                         <asp:DropDownList runat="server" ID="ListItems" AutoPostBack="true"
                             OnSelectedIndexChanged="ListItems_SelectedIndexChanged" CssClass="text-black">
