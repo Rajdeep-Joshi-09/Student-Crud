@@ -108,3 +108,5 @@ D:\Rajdeep_\VSC\Register\Register\bin\EPPlus.xml
 D:\Rajdeep_\VSC\Register\Register\bin\Microsoft.IO.RecyclableMemoryStream.xml
 D:\Rajdeep_\VSC\Register\Register\bin\System.Drawing.Common.pdb
 D:\Rajdeep_\VSC\Register\Register\bin\System.Drawing.Common.xml
+D:\Rajdeep_\VSC\Register\Register\bin\Newtonsoft.Json.dll
+D:\Rajdeep_\VSC\Register\Register\bin\Newtonsoft.Json.xml
